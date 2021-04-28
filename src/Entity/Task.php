@@ -63,6 +63,8 @@ class Task
     public function __construct()
     {
         $this->subtasks = new ArrayCollection();
+        $this->achieved = false;
+        $this->archived = false;
     }
 
     public function getId(): ?int
