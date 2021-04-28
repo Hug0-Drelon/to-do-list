@@ -65,6 +65,7 @@ class Task
         $this->subtasks = new ArrayCollection();
         $this->achieved = false;
         $this->archived = false;
+        $this->createdAt = new \DateTime('now');
     }
 
     public function getId(): ?int

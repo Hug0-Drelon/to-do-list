@@ -15,6 +15,7 @@ class AppFixtures extends Fixture
         'work',
         'study',
         'chores',
+        'workout',
     ];
 
     public function load(ObjectManager $manager)
@@ -44,9 +45,34 @@ class AppFixtures extends Fixture
         foreach ($secondTaskSubtasksNames as $subtaskName) {
             $subtask = new Subtask();
             $subtask->setName($subtaskName);
+            $manager->persist($subtask);
             $secondTask->addSubtask($subtask);
         }
+        $secondTask->setCategory($categoriesCollection[1]);
         $manager->persist($secondTask);
+        
+        $thirdTask = new Task();
+        $thirdTask->setName('learn Vue.js');
+        $thirdTask->setDeadline(new \DateTime("2021-07-01T00:00:00+00:00"));
+        $thirdTaskSubtasksNames = [
+            'go through documentation',
+            'use it in a project',
+        ];
+        foreach ($thirdTaskSubtasksNames as $subtaskName) {
+            $subtask = new Subtask();
+            $subtask->setName($subtaskName);
+            $manager->persist($subtask);
+            $thirdTask->addSubtask($subtask);
+        }
+        $thirdTask->setCategory($categoriesCollection[2]);
+        $manager->persist($thirdTask);
+
+        $fourthTask = new Task();
+        $fourthTask->setName('clean my keyboard');
+        $fourthTask->setDeadline(new \DateTime("2021-05-01T10:00:00+00:00"));
+        $fourthTask->setCategory($categoriesCollection[3]);
+        $manager->persist($fourthTask);
+
 
         $manager->flush();
     }

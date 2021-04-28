@@ -46,6 +46,7 @@ class Subtask
     public function __construct()
     {
         $this->achieved = false;
+        $this->createdAt = new \DateTime('now');
     }
 
     public function getId(): ?int
