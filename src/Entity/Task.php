@@ -58,11 +58,13 @@ class Task
     /**
      * @ORM\ManyToOne(targetEntity=Category::class)
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("task_get")
      */
     private $category;
 
     /**
      * @ORM\OneToMany(targetEntity=Subtask::class, mappedBy="task", orphanRemoval=true)
+     * @Groups("task_get")
      */
     private $subtasks;
 
