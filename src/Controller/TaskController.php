@@ -24,7 +24,7 @@ class TaskController extends AbstractController
      */
     public function showAll(TaskRepository $taskRepository)
     {
-        $resultArray = ['result' => $taskRepository->findAll()];
+        $resultArray = ['result' => $taskRepository->findWithCategoryAndSubtasks()];
 
         return $this->json($resultArray, Response::HTTP_OK, [], ['groups' => 'task_get']);
     }
@@ -34,7 +34,7 @@ class TaskController extends AbstractController
      */
     public function show($id, TaskRepository $taskRepository)
     {
-        $task = $taskRepository->findOneByCategoryAndSubtasks($id);
+        $task = $taskRepository->findOneWithCategoryAndSubtasks($id);
 
         if ($task === null) {
             $errorMessage = [
@@ -80,7 +80,7 @@ class TaskController extends AbstractController
      */
     public function update($id, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, TaskRepository $taskRepository)
     {
-        $task = $taskRepository->findOneByCategoryAndSubtasks($id);
+        $task = $taskRepository->findOneWithCategoryAndSubtasks($id);
 
         if ($task === null) {
             $errorMessage = [
@@ -115,7 +115,7 @@ class TaskController extends AbstractController
      */
     public function delete($id, EntityManagerInterface $em, TaskRepository $taskRepository)
     {
-        $task = $taskRepository->findOneByCategoryAndSubtasks($id);
+        $task = $taskRepository->findOneWithCategoryAndSubtasks($id);
 
         if ($task === null) {
             $errorMessage = [
