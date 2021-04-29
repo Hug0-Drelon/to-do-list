@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * @Route("/tasks", name="task_")
+ * @Route("/api/tasks", name="task_")
  */
 class TaskController extends AbstractController
 {
@@ -25,7 +25,7 @@ class TaskController extends AbstractController
     {
         $resultArray = ['result' => $taskRepository->findAll()];
 
-        return $this->json($resultArray);
+        return $this->json($resultArray, Response::HTTP_OK, [], ['groups' => 'task_get']);
     }
 
     /**
