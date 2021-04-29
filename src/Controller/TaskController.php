@@ -12,6 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("/api/tasks", name="task_")
@@ -31,9 +32,24 @@ class TaskController extends AbstractController
     /**
      * @Route("/{id<\d+>}", name="show", methods={"GET"})
      */
-    public function show(Task $task)
+    public function show($id, TaskRepository $taskRepository)
     {
-        return $this->json($task);
+        $task = $taskRepository->findOneByCategoryAndSubtasks($id);
+
+        if ($task === null) {
+            $errorMessage = [
+                'error' => [
+                    'code' => '404',
+                    'message' => 'Not Found'
+                ]
+            ];
+
+            return $this->json($errorMessage, Response::HTTP_NOT_FOUND);
+        }
+
+        $resultArray = ['result' => $task];
+
+        return $this->json($resultArray, Response::HTTP_OK, [], ['groups' => 'task_get']);
     }
 
     /**
@@ -62,8 +78,21 @@ class TaskController extends AbstractController
     /**
      * @Route("/{id<\d+>}", name="update", methods={"PUT", "PATCH"})
      */
-    public function update(Task $task, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em)
+    public function update($id, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, TaskRepository $taskRepository)
     {
+        $task = $taskRepository->findOneByCategoryAndSubtasks($id);
+
+        if ($task === null) {
+            $errorMessage = [
+                'error' => [
+                    'code' => '404',
+                    'message' => 'Not found.'
+                ]
+            ];
+
+            return $this->json($errorMessage, Response::HTTP_NOT_FOUND);
+        }
+
         $jsonContent = $request->getContent();
 
         $serializer->deserialize($jsonContent, Task::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $task]);
@@ -84,8 +113,21 @@ class TaskController extends AbstractController
     /**
      * @Route("/{id<\d+>}", name="delete", methods={"DELETE"})
      */
-    public function delete(Task $task, EntityManagerInterface $em)
+    public function delete($id, EntityManagerInterface $em, TaskRepository $taskRepository)
     {
+        $task = $taskRepository->findOneByCategoryAndSubtasks($id);
+
+        if ($task === null) {
+            $errorMessage = [
+                'error' => [
+                    'code' => '404',
+                    'message' => 'Not found.'
+                ]
+            ];
+
+            return $this->json($errorMessage, Response::HTTP_NOT_FOUND);
+        }
+
         $em->remove($task);
         $em->flush();
 

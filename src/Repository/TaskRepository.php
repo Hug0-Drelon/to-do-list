@@ -36,15 +36,17 @@ class TaskRepository extends ServiceEntityRepository
     }
     */
 
-    /*
-    public function findOneBySomeField($value): ?Task
+    public function findOneByCategoryAndSubtasks($id): ?Task
     {
         return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('t.id = :id')
+            ->setParameter('id', $id)
+            ->leftJoin('t.category', 'u')
+            ->addSelect('u')
+            ->leftJoin('t.subtasks', 's')
+            ->addSelect('s')
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
 }
