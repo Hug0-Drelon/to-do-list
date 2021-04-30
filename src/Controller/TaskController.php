@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
- * @Route("/api/tasks", name="task_")
+ * @Route("/api/tasks", name="tasks_")
  */
 class TaskController extends AbstractController
 {
@@ -24,15 +24,15 @@ class TaskController extends AbstractController
      */
     public function showAll(TaskRepository $taskRepository)
     {
-        $resultArray = ['result' => $taskRepository->findWithCategoryAndSubtasks()];
+        $tasks = ['result' => $taskRepository->findWithCategoryAndSubtasks()];
 
-        return $this->json($resultArray, Response::HTTP_OK, [], ['groups' => 'task_get']);
+        return $this->json($tasks, Response::HTTP_OK, [], ['groups' => 'task_get']);
     }
 
     /**
-     * @Route("/{id<\d+>}", name="show", methods={"GET"})
+     * @Route("/{id<\d+>}", name="show_one", methods={"GET"})
      */
-    public function show($id, TaskRepository $taskRepository)
+    public function showOne(int $id, TaskRepository $taskRepository)
     {
         $task = $taskRepository->findOneWithCategoryAndSubtasks($id);
 
@@ -72,13 +72,13 @@ class TaskController extends AbstractController
         $em->persist($task);
         $em->flush();
 
-        return $this->json($task, Response::HTTP_CREATED, ['Location' => $this->generateUrl('task_show', ['id' => $task->getId()])]);
+        return $this->json($task, Response::HTTP_CREATED, ['Location' => $this->generateUrl('tasks_show_one', ['id' => $task->getId()])]);
     }
 
     /**
      * @Route("/{id<\d+>}", name="update", methods={"PUT", "PATCH"})
      */
-    public function update($id, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, TaskRepository $taskRepository)
+    public function update(int $id, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, TaskRepository $taskRepository)
     {
         $task = $taskRepository->findOneWithCategoryAndSubtasks($id);
 
@@ -107,13 +107,13 @@ class TaskController extends AbstractController
 
         $em->flush();
 
-        return $this->json($task, Response::HTTP_CREATED, ['Location' => $this->generateUrl('task_show', ['id' => $task->getId()])]);
+        return $this->json($task, Response::HTTP_CREATED, ['Location' => $this->generateUrl('tasks_show_one', ['id' => $task->getId()])]);
     }
 
     /**
      * @Route("/{id<\d+>}", name="delete", methods={"DELETE"})
      */
-    public function delete($id, EntityManagerInterface $em, TaskRepository $taskRepository)
+    public function delete(int $id, EntityManagerInterface $em, TaskRepository $taskRepository)
     {
         $task = $taskRepository->findOneWithCategoryAndSubtasks($id);
 

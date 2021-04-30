@@ -16,12 +16,14 @@ class Category
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups("task_get")
+     * @Groups("category_get")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Groups("task_get")
+     * @Groups("category_get")
      */
     private $name;
 
