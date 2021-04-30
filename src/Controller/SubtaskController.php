@@ -25,7 +25,7 @@ class SubtaskController extends AbstractController
     {
         $subtasks = ['result' => $subtaskRepository->findAll()];
 
-        return $this->json($subtasks, Response::HTTP_OK);
+        return $this->json($subtasks, Response::HTTP_OK, [], ['groups' => 'subtask_get']);
     }
 
     /**

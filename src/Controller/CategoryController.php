@@ -24,7 +24,7 @@ class CategoryController extends AbstractController
     {
         $categories = ['result' => $categoryRepository->findAll()];
 
-        return $this->json($categories, Response::HTTP_OK);
+        return $this->json($categories, Response::HTTP_OK, [], ['groups' => 'category_get']);
     }
 
     /**
@@ -32,7 +32,7 @@ class CategoryController extends AbstractController
      */
     public function showOne(int $id, CategoryRepository $categoryRepository)
     {
-        $category = ['result' => $categoryRepository->find($id)];
+        $category = $categoryRepository->find($id);
 
         if ($category === null) {
             $errorMessage = [
@@ -45,7 +45,9 @@ class CategoryController extends AbstractController
             return $this->json($errorMessage, Response::HTTP_NOT_FOUND);
         }
 
-        return $this->json($category, Response::HTTP_OK, [], ['groups' => 'category_get']);
+        $resultArray = ['result' => $category];
+
+        return $this->json($resultArray, Response::HTTP_OK, [], ['groups' => 'category_get']);
     }
 
     /**

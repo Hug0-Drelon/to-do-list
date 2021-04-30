@@ -51,6 +51,11 @@ class Subtask
      */
     private $task;
 
+    public function __construct()
+    {
+        $this->achieved = false;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

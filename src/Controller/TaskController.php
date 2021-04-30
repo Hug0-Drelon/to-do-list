@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Task;
+use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -55,11 +56,20 @@ class TaskController extends AbstractController
     /**
      * @Route("/", name="add", methods={"POST"})
      */
-    public function add(EntityManagerInterface $em, Request $request, SerializerInterface $serializer, ValidatorInterface $validator)
+    public function add(EntityManagerInterface $em, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, CategoryRepository $categoryRepository)
     {
-        $jsonResponse = $request->getContent();
+        // $jsonResponse = $request->getContent();
 
-        $task = $serializer->deserialize($jsonResponse, Task::class, 'json');
+        // $task = $serializer->deserialize($jsonResponse, Task::class, 'json');
+        $taskName = $request->request->get('name');
+        $taskDeadline = new \DateTime($request->request->get('deadline'));
+        $taskCategory = $categoryRepository->find($request->request->get('category'));
+
+        $task = new Task();
+        $task->setName($taskName);
+        $task->setDeadline($taskDeadline);
+        $task->setCategory($taskCategory);
+        dd($task);
 
         $errors = $validator->validate($task);
 
