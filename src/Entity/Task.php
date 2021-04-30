@@ -18,6 +18,7 @@ class Task
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups("task_get")
+     * @Groups("subtask_get")
      */
     private $id;
 

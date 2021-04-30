@@ -49,9 +49,9 @@ class CategoryController extends AbstractController
     }
 
     /**
-     * @Route("/", name="create", methods={"POST"})
+     * @Route("/", name="add", methods={"POST"})
      */
-    public function create(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em)
+    public function add(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em)
     {
         $jsonResponse = $request->getContent();
 
