@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SubtaskRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -14,16 +15,22 @@ class Subtask
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("task_get")
+     * @Groups("subtask_get")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("task_get")
+     * @Groups("subtask_get")
      */
     private $name;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("task_get")
+     * @Groups("subtask_get")
      */
     private $achieved;
 
@@ -40,8 +47,14 @@ class Subtask
     /**
      * @ORM\ManyToOne(targetEntity=Task::class, inversedBy="subtasks")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("subtask_get")
      */
     private $task;
+
+    public function __construct()
+    {
+        $this->achieved = false;
+    }
 
     public function getId(): ?int
     {
