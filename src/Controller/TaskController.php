@@ -69,7 +69,7 @@ class TaskController extends AbstractController
         $errors = $validator->validate($task);
 
         if (count($errors)) {
-            $errorsHandler->sendValidationErrors($errors);
+            return $errorsHandler->setValidationErrorsResponse($errors);
         }
 
         $em->persist($task);
@@ -107,7 +107,7 @@ class TaskController extends AbstractController
         $errors = $validator->validate($task);
 
         if (count($errors)) {
-            $errorsHandler->sendValidationErrors($errors);
+            return $errorsHandler->setValidationErrorsResponse($errors);
         }
 
         $em->flush();

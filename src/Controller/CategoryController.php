@@ -65,7 +65,7 @@ class CategoryController extends AbstractController
         $errors = $validator->validate($category);
 
         if (count($errors)) {
-            $errorsHandler->sendValidationErrors($errors);
+            return $errorsHandler->setValidationErrorsResponse($errors);
         }
 
         $em->persist($category);
@@ -99,7 +99,7 @@ class CategoryController extends AbstractController
         $errors = $validator->validate($category);
 
         if (count($errors)) {
-            $errorsHandler->sendValidationErrors($errors);
+            return $errorsHandler->setValidationErrorsResponse($errors);
         }
 
         $em->flush();

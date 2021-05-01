@@ -8,9 +8,11 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=TaskRepository::class)
+ * @UniqueEntity("name")
  */
 class Task
 {
@@ -34,8 +36,7 @@ class Task
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Groups("task_get")
-     * @Assert\DateTime
-     * @Assert\GreaterThanOrEqual("today")
+     * @Assert\Type("DateTime")
      */
     private $deadline;
 
@@ -67,6 +68,7 @@ class Task
      * @ORM\ManyToOne(targetEntity=Category::class)
      * @ORM\JoinColumn(nullable=false)
      * @Groups("task_get")
+     * @Assert\Valid
      */
     private $category;
 

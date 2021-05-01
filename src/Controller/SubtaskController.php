@@ -67,7 +67,7 @@ class SubtaskController extends AbstractController
         $errors = $validator->validate($subtask);
 
         if (count($errors)) {
-            $errorsHandler->sendValidationErrors($errors);
+            return $errorsHandler->setValidationErrorsResponse($errors);
         }
 
         $em->persist($subtask);
@@ -95,15 +95,13 @@ class SubtaskController extends AbstractController
         }
 
         $subtaskName = $request->request->get('name');
-        $subtaskTask = $taskRepository->find($request->request->get('task'));
-
+       
         $subtask->setName($subtaskName);
-        $subtask->setTask($subtaskTask);
 
         $errors = $validator->validate($subtask);
-
+        
         if (count($errors)) {
-            $errorsHandler->sendValidationErrors($errors);
+            return $errorsHandler->setValidationErrorsResponse($errors);
         }
 
         $em->flush();

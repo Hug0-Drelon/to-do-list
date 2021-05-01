@@ -52,6 +52,7 @@ class Subtask
      * @ORM\ManyToOne(targetEntity=Task::class, inversedBy="subtasks")
      * @ORM\JoinColumn(nullable=false)
      * @Groups("subtask_get")
+     * @Assert\NotNull(message="This value should be an existing task.")
      */
     private $task;
 

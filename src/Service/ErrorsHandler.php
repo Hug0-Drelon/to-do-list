@@ -14,7 +14,7 @@ class ErrorsHandler {
         $this->response = new Response();
     }
 
-    public function sendValidationErrors(ConstraintViolationListInterface $violations)
+    public function setValidationErrorsResponse(ConstraintViolationListInterface $violations)
     {
         $errorsArray = [
             'error' => [
@@ -25,12 +25,14 @@ class ErrorsHandler {
         ];
         
         foreach ($violations as $violation) {
-            $errorsArray['error']['list'][] = [$violation->getPropertypath() => $violation->getMessage()];
+            $errorsArray['error']['detail'][] = [$violation->getPropertypath() => $violation->getMessage()];
         }
 
         $this->response
             ->setContent(json_encode($errorsArray))
             ->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->send();
+            ->headers->set('Content-Type', 'application/json');
+
+        return $this->response;
     }
 }
