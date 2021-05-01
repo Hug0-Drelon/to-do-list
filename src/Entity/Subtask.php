@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\SubtaskRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=SubtaskRepository::class)
@@ -24,6 +25,8 @@ class Subtask
      * @ORM\Column(type="string", length=255)
      * @Groups("task_get")
      * @Groups("subtask_get")
+     * @Assert\NotBlank
+     * @Assert\Length(min = 2, max = 255)
      */
     private $name;
 
@@ -31,6 +34,7 @@ class Subtask
      * @ORM\Column(type="boolean")
      * @Groups("task_get")
      * @Groups("subtask_get")
+     * @Assert\Type("bool")
      */
     private $achieved;
 

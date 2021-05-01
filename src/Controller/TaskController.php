@@ -5,15 +5,14 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
+use App\Service\ErrorsHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("/api/tasks", name="tasks_")
@@ -56,7 +55,7 @@ class TaskController extends AbstractController
     /**
      * @Route("/", name="add", methods={"POST"})
      */
-    public function add(EntityManagerInterface $em, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, CategoryRepository $categoryRepository)
+    public function add(EntityManagerInterface $em, Request $request, ErrorsHandler $errorsHandler, ValidatorInterface $validator, CategoryRepository $categoryRepository)
     {
         $taskName = $request->request->get('name');
         $taskDeadline = new \DateTime($request->request->get('deadline'));
@@ -70,9 +69,7 @@ class TaskController extends AbstractController
         $errors = $validator->validate($task);
 
         if (count($errors)) {
-            $errorsString = (string) $errors;
-
-            return $this->json($errorsString, Response::HTTP_UNPROCESSABLE_ENTITY);
+            $errorsHandler->sendValidationErrors($errors);
         }
 
         $em->persist($task);
@@ -84,7 +81,7 @@ class TaskController extends AbstractController
     /**
      * @Route("/{id<\d+>}", name="update", methods={"PUT", "PATCH"})
      */
-    public function update(int $id, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em,CategoryRepository $categoryRepository, TaskRepository $taskRepository)
+    public function update(int $id, Request $request, ErrorsHandler $errorsHandler, ValidatorInterface $validator, EntityManagerInterface $em,CategoryRepository $categoryRepository, TaskRepository $taskRepository)
     {
         $task = $taskRepository->findOneWithCategoryAndSubtasks($id);
 
@@ -110,9 +107,7 @@ class TaskController extends AbstractController
         $errors = $validator->validate($task);
 
         if (count($errors)) {
-            $errorsString = (string) $errors;
-
-            return $this->json($errorsString, Response::HTTP_UNPROCESSABLE_ENTITY);
+            $errorsHandler->sendValidationErrors($errors);
         }
 
         $em->flush();

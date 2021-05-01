@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=TaskRepository::class)
@@ -25,24 +26,30 @@ class Task
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Groups("task_get")
+     * @Assert\NotBlank
+     * @Assert\Length(min = 2, max = 255)
      */
     private $name;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Groups("task_get")
+     * @Assert\DateTime
+     * @Assert\GreaterThanOrEqual("today")
      */
     private $deadline;
 
     /**
      * @ORM\Column(type="boolean")
      * @Groups("task_get")
+     * @Assert\Type("bool")
      */
     private $achieved;
 
     /**
      * @ORM\Column(type="boolean")
      * @Groups("task_get")
+     * @Assert\Type("bool")
      */
     private $archived;
 

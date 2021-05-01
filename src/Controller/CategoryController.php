@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Repository\CategoryRepository;
+use App\Service\ErrorsHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -54,7 +55,7 @@ class CategoryController extends AbstractController
     /**
      * @Route("/", name="add", methods={"POST"})
      */
-    public function add(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em)
+    public function add(Request $request,ErrorsHandler $errorsHandler, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em)
     {
         $categoryName = $request->request->get('name');
 
@@ -64,9 +65,7 @@ class CategoryController extends AbstractController
         $errors = $validator->validate($category);
 
         if (count($errors)) {
-            $errorsString = (string) $errors;
-
-            return $this->json($errorsString, Response::HTTP_UNPROCESSABLE_ENTITY);
+            $errorsHandler->sendValidationErrors($errors);
         }
 
         $em->persist($category);
@@ -78,14 +77,14 @@ class CategoryController extends AbstractController
     /**
      * @Route("/{id<\d+>}", name="update", methods={"PUT", "PATCH"})
      */
-    public function update(int $id, Request $request, SerializerInterface $serializer, CategoryRepository $categoryRepository, ValidatorInterface $validator, EntityManagerInterface $em)
+    public function update(int $id, Request $request, ErrorsHandler $errorsHandler, SerializerInterface $serializer, CategoryRepository $categoryRepository, ValidatorInterface $validator, EntityManagerInterface $em)
     {
         $category = $categoryRepository->find($id);
 
         if ($category === null) {
             $errorMessage = [
                 'error' => [
-                    'code' => '404',
+                    'code' => 404,
                     'message' => 'Not found.'
                 ]
             ];
@@ -100,9 +99,7 @@ class CategoryController extends AbstractController
         $errors = $validator->validate($category);
 
         if (count($errors)) {
-            $errorsString = (string) $errors;
-
-            return $this->json($errorsString, Response::HTTP_UNPROCESSABLE_ENTITY);
+            $errorsHandler->sendValidationErrors($errors);
         }
 
         $em->flush();
