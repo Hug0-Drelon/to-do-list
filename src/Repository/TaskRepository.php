@@ -19,32 +19,40 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
-    // /**
-    //  * @return Task[] Returns an array of Task objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Return all tasks with associated subtasks and categories with one query
+     * 
+     * @return Task[]|null Returns an array of Task objects
+     */
+    public function findWithCategoryAndSubtasks()
     {
         return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
-            ->setMaxResults(10)
+            ->leftJoin('t.category', 'u')
+            ->addSelect('u')
+            ->leftJoin('t.subtasks', 's')
+            ->addSelect('s')
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Task
+    /**
+     * Return a task with associated subtasks and category with one query
+     *
+     * @param int $id
+     * @return Task|null
+     */
+    public function findOneWithCategoryAndSubtasks(int $id): ?Task
     {
         return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('t.id = :id')
+            ->setParameter('id', $id)
+            ->leftJoin('t.category', 'u')
+            ->addSelect('u')
+            ->leftJoin('t.subtasks', 's')
+            ->addSelect('s')
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
 }

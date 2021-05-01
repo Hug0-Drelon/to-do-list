@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\TaskRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -16,26 +17,32 @@ class Task
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("task_get")
+     * @Groups("subtask_get")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups("task_get")
      */
     private $name;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups("task_get")
      */
     private $deadline;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("task_get")
      */
     private $achieved;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("task_get")
      */
     private $archived;
 
@@ -52,11 +59,13 @@ class Task
     /**
      * @ORM\ManyToOne(targetEntity=Category::class)
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("task_get")
      */
     private $category;
 
     /**
      * @ORM\OneToMany(targetEntity=Subtask::class, mappedBy="task", orphanRemoval=true)
+     * @Groups("task_get")
      */
     private $subtasks;
 
