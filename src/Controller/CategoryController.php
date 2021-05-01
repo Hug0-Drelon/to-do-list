@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,9 +56,10 @@ class CategoryController extends AbstractController
      */
     public function add(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em)
     {
-        $jsonResponse = $request->getContent();
+        $categoryName = $request->request->get('name');
 
-        $category = $serializer->deserialize($jsonResponse, Task::class, 'json');
+        $category = new Category();
+        $category->setName($categoryName);
 
         $errors = $validator->validate($category);
 
@@ -70,7 +72,7 @@ class CategoryController extends AbstractController
         $em->persist($category);
         $em->flush();
 
-        return $this->json($category, Response::HTTP_CREATED, ['Location' => $this->generateUrl('categories_show_one', ['id' => $category->getId()])]);
+        return $this->json(['result' => $category], Response::HTTP_CREATED, ['Location' => $this->generateUrl('categories_show_one', ['id' => $category->getId()])]);
     }
 
     /**
@@ -91,9 +93,9 @@ class CategoryController extends AbstractController
             return $this->json($errorMessage, Response::HTTP_NOT_FOUND);
         }
 
-        $jsonContent = $request->getContent();
+        $categoryName = $request->request->get('name');
 
-        $serializer->deserialize($jsonContent, Task::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $category]);
+        $category->setName($categoryName);
         
         $errors = $validator->validate($category);
 
@@ -105,7 +107,7 @@ class CategoryController extends AbstractController
 
         $em->flush();
 
-        return $this->json($category, Response::HTTP_CREATED, ['Location' => $this->generateUrl('categories_show_one', ['id' => $category->getId()])]);
+        return $this->json([], Response::HTTP_NO_CONTENT, ['Location' => $this->generateUrl('categories_show_one', ['id' => $category->getId()])]);
     }
 
     /**

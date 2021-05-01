@@ -58,9 +58,6 @@ class TaskController extends AbstractController
      */
     public function add(EntityManagerInterface $em, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, CategoryRepository $categoryRepository)
     {
-        // $jsonResponse = $request->getContent();
-
-        // $task = $serializer->deserialize($jsonResponse, Task::class, 'json');
         $taskName = $request->request->get('name');
         $taskDeadline = new \DateTime($request->request->get('deadline'));
         $taskCategory = $categoryRepository->find($request->request->get('category'));
@@ -69,7 +66,6 @@ class TaskController extends AbstractController
         $task->setName($taskName);
         $task->setDeadline($taskDeadline);
         $task->setCategory($taskCategory);
-        dd($task);
 
         $errors = $validator->validate($task);
 
@@ -82,13 +78,13 @@ class TaskController extends AbstractController
         $em->persist($task);
         $em->flush();
 
-        return $this->json($task, Response::HTTP_CREATED, ['Location' => $this->generateUrl('tasks_show_one', ['id' => $task->getId()])]);
+        return $this->json(['result' => $task], Response::HTTP_CREATED, ['Location' => $this->generateUrl('tasks_show_one', ['id' => $task->getId()])], ['groups' => 'task_get']);
     }
 
     /**
      * @Route("/{id<\d+>}", name="update", methods={"PUT", "PATCH"})
      */
-    public function update(int $id, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, TaskRepository $taskRepository)
+    public function update(int $id, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em,CategoryRepository $categoryRepository, TaskRepository $taskRepository)
     {
         $task = $taskRepository->findOneWithCategoryAndSubtasks($id);
 
@@ -103,9 +99,13 @@ class TaskController extends AbstractController
             return $this->json($errorMessage, Response::HTTP_NOT_FOUND);
         }
 
-        $jsonContent = $request->getContent();
+        $newTaskName = $request->request->get('name');
+        $newTaskDeadline = new \DateTime($request->request->get('deadline'));
+        $newTaskCategory = $categoryRepository->find($request->request->get('category'));
 
-        $serializer->deserialize($jsonContent, Task::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $task]);
+        $task->setName($newTaskName);
+        $task->setDeadline($newTaskDeadline);
+        $task->setCategory($newTaskCategory);
         
         $errors = $validator->validate($task);
 
@@ -117,7 +117,7 @@ class TaskController extends AbstractController
 
         $em->flush();
 
-        return $this->json($task, Response::HTTP_CREATED, ['Location' => $this->generateUrl('tasks_show_one', ['id' => $task->getId()])]);
+        return $this->json([], Response::HTTP_NO_CONTENT, ['Location' => $this->generateUrl('tasks_show_one', ['id' => $task->getId()])], ['groups' => 'task_get']);
     }
 
     /**

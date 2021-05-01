@@ -4,13 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Subtask;
 use App\Repository\SubtaskRepository;
+use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -54,11 +54,14 @@ class SubtaskController extends AbstractController
     /**
      * @Route("/", name="add", methods={"POST"})
      */
-    public function add(EntityManagerInterface $em, Request $request, SerializerInterface $serializer, ValidatorInterface $validator)
+    public function add(EntityManagerInterface $em, Request $request, TaskRepository $taskRepository, ValidatorInterface $validator)
     {
-        $jsonResponse = $request->getContent();
+        $subtaskName = $request->request->get('name');
+        $subtaskTask = $taskRepository->find($request->request->get('task'));
 
-        $subtask = $serializer->deserialize($jsonResponse, Subtask::class, 'json');
+        $subtask = new Subtask();
+        $subtask->setName($subtaskName);
+        $subtask->setTask($subtaskTask);
 
         $errors = $validator->validate($subtask);
 
@@ -71,13 +74,13 @@ class SubtaskController extends AbstractController
         $em->persist($subtask);
         $em->flush();
 
-        return $this->json($subtask, Response::HTTP_CREATED, ['Location' => $this->generateUrl('subtasks_show_one', ['id' => $task->getId()])]);
+        return $this->json(['result' => $subtask], Response::HTTP_CREATED, ['Location' => $this->generateUrl('subtasks_show_one', ['id' => $subtask->getId()])], ['groups' => 'subtask_get']);
     }
 
     /**
      * @Route("/{id<\d+>}", name="update", methods={"PUT", "PATCH"})
      */
-    public function update(int $id, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, SubtaskRepository $subtaskRepository)
+    public function update(int $id, Request $request, TaskRepository $taskRepository, ValidatorInterface $validator, EntityManagerInterface $em, SubtaskRepository $subtaskRepository)
     {
         $subtask = $subtaskRepository->find($id);
 
@@ -92,10 +95,12 @@ class SubtaskController extends AbstractController
             return $this->json($errorMessage, Response::HTTP_NOT_FOUND);
         }
 
-        $jsonContent = $request->getContent();
+        $subtaskName = $request->request->get('name');
+        $subtaskTask = $taskRepository->find($request->request->get('task'));
 
-        $serializer->deserialize($jsonContent, Subtask::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $subtask]);
-        
+        $subtask->setName($subtaskName);
+        $subtask->setTask($subtaskTask);
+
         $errors = $validator->validate($subtask);
 
         if (count($errors)) {
@@ -106,7 +111,7 @@ class SubtaskController extends AbstractController
 
         $em->flush();
 
-        return $this->json($subtask, Response::HTTP_CREATED, ['Location' => $this->generateUrl('subtasks_show_one', ['id' => $subtask->getId()])]);
+        return $this->json([], Response::HTTP_NO_CONTENT, ['Location' => $this->generateUrl('subtasks_show_one', ['id' => $subtask->getId()])], ['groups' => 'subtask_get']);
     }
 
     /**
