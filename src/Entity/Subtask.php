@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\SubtaskRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=SubtaskRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Subtask
 {
@@ -24,6 +26,8 @@ class Subtask
      * @ORM\Column(type="string", length=255)
      * @Groups("task_get")
      * @Groups("subtask_get")
+     * @Assert\NotBlank
+     * @Assert\Length(min = 2, max = 255)
      */
     private $name;
 
@@ -31,6 +35,7 @@ class Subtask
      * @ORM\Column(type="boolean")
      * @Groups("task_get")
      * @Groups("subtask_get")
+     * @Assert\Type("bool")
      */
     private $achieved;
 
@@ -48,13 +53,29 @@ class Subtask
      * @ORM\ManyToOne(targetEntity=Task::class, inversedBy="subtasks")
      * @ORM\JoinColumn(nullable=false)
      * @Groups("subtask_get")
+     * @Assert\NotNull(message="This value should be an existing task.")
      */
     private $task;
 
     public function __construct()
     {
         $this->achieved = false;
-        $this->createdAt = new \DateTime('now');
+    }
+
+    /**
+     * @ORM\preUpdate
+     */
+    public function setUpdatedAtValue()
+    {
+        $this->updatedAt = new \DateTimeImmutable('now');
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTimeImmutable('now');
     }
 
     public function getId(): ?int

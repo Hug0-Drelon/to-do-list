@@ -7,9 +7,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=TaskRepository::class)
+ * @UniqueEntity("name")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Task
 {
@@ -25,24 +29,29 @@ class Task
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Groups("task_get")
+     * @Assert\NotBlank
+     * @Assert\Length(min = 2, max = 255)
      */
     private $name;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Groups("task_get")
+     * @Assert\Type("DateTimeImmutable")
      */
     private $deadline;
 
     /**
      * @ORM\Column(type="boolean")
      * @Groups("task_get")
+     * @Assert\Type("bool")
      */
     private $achieved;
 
     /**
      * @ORM\Column(type="boolean")
      * @Groups("task_get")
+     * @Assert\Type("bool")
      */
     private $archived;
 
@@ -60,6 +69,7 @@ class Task
      * @ORM\ManyToOne(targetEntity=Category::class)
      * @ORM\JoinColumn(nullable=false)
      * @Groups("task_get")
+     * @Assert\NotNull(message="This value should be an existing category.")
      */
     private $category;
 
@@ -74,7 +84,22 @@ class Task
         $this->subtasks = new ArrayCollection();
         $this->achieved = false;
         $this->archived = false;
-        $this->createdAt = new \DateTime('now');
+    }
+
+    /**
+     * @ORM\preUpdate
+     */
+    public function setUpdatedAtValue()
+    {
+        $this->updatedAt = new \DateTimeImmutable('now');
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTimeImmutable('now');
     }
 
     public function getId(): ?int

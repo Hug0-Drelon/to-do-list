@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Subtask;
 use App\Repository\SubtaskRepository;
 use App\Repository\TaskRepository;
+use App\Service\ErrorsHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,7 +55,7 @@ class SubtaskController extends AbstractController
     /**
      * @Route("/", name="add", methods={"POST"})
      */
-    public function add(EntityManagerInterface $em, Request $request, TaskRepository $taskRepository, ValidatorInterface $validator)
+    public function add(EntityManagerInterface $em, Request $request, ErrorsHandler $errorsHandler, TaskRepository $taskRepository, ValidatorInterface $validator)
     {
         $subtaskName = $request->request->get('name');
         $subtaskTask = $taskRepository->find($request->request->get('task'));
@@ -66,9 +67,7 @@ class SubtaskController extends AbstractController
         $errors = $validator->validate($subtask);
 
         if (count($errors)) {
-            $errorsString = (string) $errors;
-
-            return $this->json($errorsString, Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $errorsHandler->setValidationErrorsResponse($errors);
         }
 
         $em->persist($subtask);
@@ -80,7 +79,7 @@ class SubtaskController extends AbstractController
     /**
      * @Route("/{id<\d+>}", name="update", methods={"PUT", "PATCH"})
      */
-    public function update(int $id, Request $request, TaskRepository $taskRepository, ValidatorInterface $validator, EntityManagerInterface $em, SubtaskRepository $subtaskRepository)
+    public function update(int $id, Request $request, ErrorsHandler $errorsHandler, TaskRepository $taskRepository, ValidatorInterface $validator, EntityManagerInterface $em, SubtaskRepository $subtaskRepository)
     {
         $subtask = $subtaskRepository->find($id);
 
@@ -96,17 +95,13 @@ class SubtaskController extends AbstractController
         }
 
         $subtaskName = $request->request->get('name');
-        $subtaskTask = $taskRepository->find($request->request->get('task'));
-
+       
         $subtask->setName($subtaskName);
-        $subtask->setTask($subtaskTask);
 
         $errors = $validator->validate($subtask);
-
+        
         if (count($errors)) {
-            $errorsString = (string) $errors;
-
-            return $this->json($errorsString, Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $errorsHandler->setValidationErrorsResponse($errors);
         }
 
         $em->flush();

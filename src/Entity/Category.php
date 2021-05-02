@@ -5,9 +5,13 @@ namespace App\Entity;
 use App\Repository\CategoryRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
+ * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity("name")
  */
 class Category
 {
@@ -24,6 +28,8 @@ class Category
      * @ORM\Column(type="string", length=255, unique=true)
      * @Groups("task_get")
      * @Groups("category_get")
+     * @Assert\NotBlank
+     * @Assert\Length(min = 2, max = 255)
      */
     private $name;
 
@@ -37,9 +43,20 @@ class Category
      */
     private $updatedAt;
 
-    public function __construct()
+    /**
+     * @ORM\PreUpdate
+     */
+    public function setUpdatedAtValue()
     {
-        $this->createdAt = new \DateTime('now');
+        $this->updatedAt = new \DateTimeImmutable('now');
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTimeImmutable('now');
     }
 
     public function getId(): ?int
