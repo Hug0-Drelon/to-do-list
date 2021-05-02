@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  * @UniqueEntity("name")
  */
 class Category
@@ -42,9 +43,20 @@ class Category
      */
     private $updatedAt;
 
-    public function __construct()
+    /**
+     * @ORM\PreUpdate
+     */
+    public function setUpdatedAtValue()
     {
-        $this->createdAt = new \DateTime('now');
+        $this->updatedAt = new \DateTimeImmutable('now');
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTimeImmutable('now');
     }
 
     public function getId(): ?int

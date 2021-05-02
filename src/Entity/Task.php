@@ -13,6 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass=TaskRepository::class)
  * @UniqueEntity("name")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Task
 {
@@ -36,7 +37,7 @@ class Task
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Groups("task_get")
-     * @Assert\Type("DateTime")
+     * @Assert\Type("DateTimeImmutable")
      */
     private $deadline;
 
@@ -68,7 +69,7 @@ class Task
      * @ORM\ManyToOne(targetEntity=Category::class)
      * @ORM\JoinColumn(nullable=false)
      * @Groups("task_get")
-     * @Assert\Valid
+     * @Assert\NotNull(message="This value should be an existing category.")
      */
     private $category;
 
@@ -83,7 +84,22 @@ class Task
         $this->subtasks = new ArrayCollection();
         $this->achieved = false;
         $this->archived = false;
-        $this->createdAt = new \DateTime('now');
+    }
+
+    /**
+     * @ORM\preUpdate
+     */
+    public function setUpdatedAtValue()
+    {
+        $this->updatedAt = new \DateTimeImmutable('now');
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTimeImmutable('now');
     }
 
     public function getId(): ?int

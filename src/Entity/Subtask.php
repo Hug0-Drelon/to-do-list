@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=SubtaskRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Subtask
 {
@@ -59,7 +60,22 @@ class Subtask
     public function __construct()
     {
         $this->achieved = false;
-        $this->createdAt = new \DateTime('now');
+    }
+
+    /**
+     * @ORM\preUpdate
+     */
+    public function setUpdatedAtValue()
+    {
+        $this->updatedAt = new \DateTimeImmutable('now');
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTimeImmutable('now');
     }
 
     public function getId(): ?int

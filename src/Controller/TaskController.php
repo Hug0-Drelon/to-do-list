@@ -58,7 +58,7 @@ class TaskController extends AbstractController
     public function add(EntityManagerInterface $em, Request $request, ErrorsHandler $errorsHandler, ValidatorInterface $validator, CategoryRepository $categoryRepository)
     {
         $taskName = $request->request->get('name');
-        $taskDeadline = new \DateTime($request->request->get('deadline'));
+        $taskDeadline = empty($request->request->get('deadline')) ? null : new \DateTimeImmutable($request->request->get('deadline'));
         $taskCategory = $categoryRepository->find($request->request->get('category'));
 
         $task = new Task();
@@ -97,13 +97,13 @@ class TaskController extends AbstractController
         }
 
         $newTaskName = $request->request->get('name');
-        $newTaskDeadline = new \DateTime($request->request->get('deadline'));
+        $newTaskDeadline = empty($request->request->get('deadline')) ? null : new \DateTimeImmutable($request->request->get('deadline'));
         $newTaskCategory = $categoryRepository->find($request->request->get('category'));
 
         $task->setName($newTaskName);
         $task->setDeadline($newTaskDeadline);
         $task->setCategory($newTaskCategory);
-        
+
         $errors = $validator->validate($task);
 
         if (count($errors)) {
