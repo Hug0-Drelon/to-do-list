@@ -237,9 +237,6 @@
             "src/Kernel.php"
         ]
     },
-    "symfony/http-client-contracts": {
-        "version": "v2.4.0"
-    },
     "symfony/http-foundation": {
         "version": "v5.2.4"
     },
@@ -265,9 +262,6 @@
         "version": "v1.22.1"
     },
     "symfony/polyfill-mbstring": {
-        "version": "v1.22.1"
-    },
-    "symfony/polyfill-php73": {
         "version": "v1.22.1"
     },
     "symfony/polyfill-php80": {
