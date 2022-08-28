@@ -24,7 +24,7 @@ class TaskRepository extends ServiceEntityRepository
      * 
      * @return Task[]|null Returns an array of Task objects
      */
-    public function findWithCategoryAndSubtasks()
+    public function findWithCategoryAndSubtasks(): ?array
     {
         return $this->createQueryBuilder('t')
             ->leftJoin('t.category', 'u')

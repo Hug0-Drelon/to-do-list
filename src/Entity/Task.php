@@ -194,7 +194,7 @@ class Task
     /**
      * @return Collection|Subtask[]
      */
-    public function getSubtasks(): Collection
+    public function getSubtasks(): Collection|\Doctrine\Common\Collections\Collection
     {
         return $this->subtasks;
     }
