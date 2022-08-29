@@ -14,14 +14,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @Route("/api/subtasks", name="subtasks_")
- */
+#[Route("/api/subtasks", name: "subtasks_")]
 class SubtaskController extends AbstractController
 {
-     /**
-      * @Route("/", name="show_all", methods={"GET"})
-      */
+    #[Route("/", name: "show_all", methods: ["GET"])]
     public function showAll(SubtaskRepository $subtaskRepository)
     {
         $subtasks = ['result' => $subtaskRepository->findAll()];
@@ -29,9 +25,7 @@ class SubtaskController extends AbstractController
         return $this->json($subtasks, Response::HTTP_OK, [], ['groups' => 'subtask_get']);
     }
 
-    /**
-     * @Route("/{id<\d+>}", name="show_one", methods={"GET"})
-     */
+    #[Route("/{id<\d+>}", name: "show_one", methods: ["GET"])]
     public function showOne(int $id, SubtaskRepository $subtaskRepository)
     {
         $subtask = $subtaskRepository->find($id);
@@ -52,9 +46,7 @@ class SubtaskController extends AbstractController
         return $this->json($resultArray, Response::HTTP_OK, [], ['groups' => 'subtask_get']);
     }
 
-    /**
-     * @Route("/", name="add", methods={"POST"})
-     */
+    #[Route("/", name: "add", methods: ["POST"])]
     public function add(EntityManagerInterface $em, Request $request, ErrorsHandler $errorsHandler, TaskRepository $taskRepository, ValidatorInterface $validator)
     {
         $subtaskName = $request->request->get('name');
@@ -76,9 +68,7 @@ class SubtaskController extends AbstractController
         return $this->json(['result' => $subtask], Response::HTTP_CREATED, ['Location' => $this->generateUrl('subtasks_show_one', ['id' => $subtask->getId()])], ['groups' => 'subtask_get']);
     }
 
-    /**
-     * @Route("/{id<\d+>}", name="update", methods={"PUT", "PATCH"})
-     */
+    #[Route("/{id<\d+>}", name: "update", methods: ["PUT", "PATCH"])]
     public function update(int $id, Request $request, ErrorsHandler $errorsHandler, TaskRepository $taskRepository, ValidatorInterface $validator, EntityManagerInterface $em, SubtaskRepository $subtaskRepository)
     {
         $subtask = $subtaskRepository->find($id);
@@ -109,9 +99,7 @@ class SubtaskController extends AbstractController
         return $this->json([], Response::HTTP_NO_CONTENT, ['Location' => $this->generateUrl('subtasks_show_one', ['id' => $subtask->getId()])], ['groups' => 'subtask_get']);
     }
 
-    /**
-     * @Route("/{id<\d+>}", name="delete", methods={"DELETE"})
-     */
+    #[Route("/{id<\d+>}", name: "delete", methods: ["DELETE"])]
     public function delete(int $id, EntityManagerInterface $em, SubtaskRepository $subtaskRepository)
     {
         $subtask = $subtaskRepository->find($id);
